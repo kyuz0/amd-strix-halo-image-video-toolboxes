@@ -6,7 +6,7 @@ export HF_HUB_ENABLE_HF_TRANSFER=1
 export HF_HOME="${HF_HOME:-$HOME/.cache/huggingface}"   # persistent HF cache
 HF="/opt/venv/bin/hf"
 
-MODEL_HOME="$HOME/comfy-models"
+MODEL_HOME="$HOME/comfy-ui/models"
 STAGE="$MODEL_HOME/.hf_stage_qwen"                      # persistent staging (resume support)
 
 mkdir -p "$MODEL_HOME"/{text_encoders,vae,diffusion_models}

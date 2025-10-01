@@ -14,11 +14,6 @@ ENV PIP_NO_CACHE_DIR=1
 RUN printf 'source /opt/venv/bin/activate\n' > /etc/profile.d/venv.sh
 RUN python -m pip install --upgrade pip setuptools wheel
 
-# Helper scripts (ComfyUI-only)
-COPY scripts/get_wan22.sh /opt/
-COPY scripts/set_extra_paths.sh /opt/
-COPY scripts/get_qwen_image.sh /opt/
-
 # ROCm + PyTorch (TheRock, include torchaudio for resolver; remove later)
 ARG ROCM_INDEX=https://d2awnip2yjpvqn.cloudfront.net/v2/gfx1151/
 RUN python -m pip install --index-url ${ROCM_INDEX} 'rocm[libraries,devel]' && \
@@ -33,11 +28,6 @@ WORKDIR /opt/ComfyUI
 RUN python -m pip install -r requirements.txt && \
     python -m pip install --prefer-binary \
       pillow opencv-python-headless imageio imageio-ffmpeg scipy "huggingface_hub[hf_transfer]" pyyaml
-
-# ComfyUI plugins
-WORKDIR /opt/ComfyUI/custom_nodes
-RUN git clone --depth=1 https://github.com/cubiq/ComfyUI_essentials /opt/ComfyUI/custom_nodes/ComfyUI_essentials 
-RUN git clone --depth=1 https://github.com/kyuz0/ComfyUI-AMDGPUMonitor /opt/ComfyUI/custom_nodes/ComfyUI-AMDGPUMonitor 
 
 # Qwen Image Studio
 WORKDIR /opt
@@ -69,13 +59,16 @@ RUN chmod -R a+rwX /opt && chmod +x /opt/*.sh || true && \
 # ROCm/Triton env (exports TRITON_HIP_* and LD_LIBRARY_PATH; also FA enable)
 COPY scripts/01-rocm-env-for-triton.sh /etc/profile.d/01-rocm-env-for-triton.sh
 
+# Helper scripts (ComfyUI-only)
+COPY --chmod='0645' scripts/get_wan22.sh /opt/
+COPY --chmod='0645' scripts/comfy_setup.sh /opt/
+COPY --chmod='0645' scripts/get_qwen_image.sh /opt/
+
 # Banner script (runs on login). Use a high sort key so it runs after venv.sh and 01-rocm-env...
-COPY scripts/99-toolbox-banner.sh /etc/profile.d/99-toolbox-banner.sh
-RUN chmod 0644 /etc/profile.d/99-toolbox-banner.sh
+COPY --chmod='0644' scripts/99-toolbox-banner.sh /etc/profile.d/99-toolbox-banner.sh
 
 # Keep /opt/venv/bin first after user dotfiles
-COPY scripts/zz-venv-last.sh /etc/profile.d/zz-venv-last.sh
-RUN chmod 0644 /etc/profile.d/zz-venv-last.sh
+COPY --chmod='0644' scripts/zz-venv-last.sh /etc/profile.d/zz-venv-last.sh
 
 # Disable core dumps in interactive shells (helps with recovering faster from ROCm crashes)
 RUN printf 'ulimit -S -c 0\n' > /etc/profile.d/90-nocoredump.sh && chmod 0644 /etc/profile.d/90-nocoredump.sh

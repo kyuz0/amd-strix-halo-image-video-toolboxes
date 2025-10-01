@@ -85,7 +85,7 @@ This toolbox provides a ROCm nightly stack for Strix Halo (gfx1151), built from 
 | **WAN 2.2** ([Wan-Video/Wan2.2](https://github.com/Wan-Video/Wan2.2))                              | `/opt/wan-video-studio`  | CLI for text-to-video / image-to-video                 |
 | **ComfyUI** ([ComfyUI](https://github.com/comfyanonymous/ComfyUI))                                 | `/opt/ComfyUI`           | Node-based UI, AMD GPU monitor plugin                  |
 
-> **Note:** Scripts in `/opt` (`set_extra_paths.sh`, `get_qwen_image.sh`, `get_wan22.sh`) are **for ComfyUI only**. Skip them unless you use ComfyUI.
+> **Note:** Scripts in `/opt` (`comfy_setup.sh`, `get_qwen_image.sh`, `get_wan22.sh`) are **for ComfyUI only**. Skip them unless you use ComfyUI.
 
 ---
 
@@ -399,17 +399,20 @@ ComfyUI is a flexible node-based interface for building and running image and vi
 Before running ComfyUI, download model weights to `~/comfy-models` in your home directory.
 
 ```bash
-# Run this FIRST to create ~/comfy-models and config file to point ComfyUI there
-/opt/set_extra_paths.sh 
+# Run this FIRST to create ~/comfy-ui and install extensions.
+/opt/comfy_setup.sh 
 
 # Fetch model weights to ~/comfy-models
 /opt/get_qwen_image.sh   # fetches Qwen Image models
 /opt/get_wan22.sh        # fetches Wan2.2 models
 ```
 
-These scripts ensure model files are downloaded to `~/comfy-models/` where they survive toolbox refreshes.
+These scripts ensure model files are downloaded to `~/comfy-ui/models` where they survive toolbox refreshes.
+It will also set up essential ComfyUI extensions.
 
 ### 9.2. Run
+
+The `start_comfy_ui` helper script starts ComfyUI with the `--base-path` set to your `~/comfy-ui` directory, where all extensions, models, outputs and other user data will be stored, surviving toolbox refreshes.
 
 Start ComfyUI inside the toolbox:
 
@@ -421,12 +424,12 @@ Alias details:
 
 ```bash
 cd /opt/ComfyUI
-python main.py --port 8000 --output-directory "$HOME/comfy-outputs" --disable-mmap
+python main.py --port 8000 --base-directory $HOME/comfy-ui --disable-mmap
 ```
 
 > You will see an error message for missing `torchaudio`: this is **temporarily** removed as its presence causes ComfyUI to crash on boot.
 
-* Outputs appear under `~/comfy-outputs/` in your HOME.
+* Outputs appear under `~/comfy-ui/output` in your HOME.
 * Default ComfyUI port is 8188, but using `--port 8000` aligns it with Qwen Image Studio.
 * Remote over SSH:
 
