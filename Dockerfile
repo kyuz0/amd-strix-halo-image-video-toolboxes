@@ -20,7 +20,7 @@ COPY scripts/set_extra_paths.sh /opt/
 COPY scripts/get_qwen_image.sh /opt/
 
 # ROCm + PyTorch (TheRock, include torchaudio for resolver; remove later)
-python -m pip install \
+RUN python -m pip install \
   --index-url https://rocm.nightlies.amd.com/v2/gfx1151/ \
   --pre torch torchaudio torchvision
 
