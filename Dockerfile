@@ -20,10 +20,9 @@ COPY scripts/set_extra_paths.sh /opt/
 COPY scripts/get_qwen_image.sh /opt/
 
 # ROCm + PyTorch (TheRock, include torchaudio for resolver; remove later)
-ARG ROCM_INDEX=https://d2awnip2yjpvqn.cloudfront.net/v2/gfx1151/
-RUN python -m pip install --index-url ${ROCM_INDEX} 'rocm[libraries,devel]' && \
-    python -m pip install --index-url ${ROCM_INDEX} \
-      torch torchvision torchaudio==2.7.1a0 pytorch-triton-rocm numpy
+python -m pip install \
+  --index-url https://rocm.nightlies.amd.com/v2/gfx1151/ \
+  --pre torch torchaudio torchvision
 
 WORKDIR /opt
 
