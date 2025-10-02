@@ -85,7 +85,7 @@ This toolbox provides a ROCm nightly stack for Strix Halo (gfx1151), built from 
 | **WAN 2.2** ([Wan-Video/Wan2.2](https://github.com/Wan-Video/Wan2.2))                              | `/opt/wan-video-studio`  | CLI for text-to-video / image-to-video                 |
 | **ComfyUI** ([ComfyUI](https://github.com/comfyanonymous/ComfyUI))                                 | `/opt/ComfyUI`           | Node-based UI, AMD GPU monitor plugin                  |
 
-> **Note:** Scripts in `/opt` (`comfy_setup.sh`, `get_qwen_image.sh`, `get_wan22.sh`) are **for ComfyUI only**. Skip them unless you use ComfyUI.
+> **Note:** Scripts in `/opt` (`start_comfy_ui.sh`, `get_qwen_image.sh`, `get_wan22.sh`) are **for ComfyUI only**. Skip them unless you use ComfyUI.
 
 ---
 
@@ -396,12 +396,7 @@ ComfyUI is a flexible node-based interface for building and running image and vi
 
 ### 9.1. Setup (ComfyUI only)
 
-Before running ComfyUI, download model weights to `~/comfy-models` in your home directory.
-
 ```bash
-# Run this FIRST to create ~/comfy-ui and install extensions.
-/opt/comfy_setup.sh 
-
 # Fetch model weights to ~/comfy-models
 /opt/get_qwen_image.sh   # fetches Qwen Image models
 /opt/get_wan22.sh        # fetches Wan2.2 models
@@ -412,7 +407,7 @@ It will also set up essential ComfyUI extensions.
 
 ### 9.2. Run
 
-The `start_comfy_ui` helper script starts ComfyUI with the `--base-path` set to your `~/comfy-ui` directory, where all extensions, models, outputs and other user data will be stored, surviving toolbox refreshes.
+The `start_comfy_ui` helper script starts ComfyUI with the `--base-path` set to your `~/comfy-ui` directory, where all extensions, models, outputs and other user data will be stored, surviving toolbox refreshes. It will populate that directory if it doesn't already exist, and install essential extensions if they are missing.
 
 Start ComfyUI inside the toolbox:
 
@@ -420,12 +415,6 @@ Start ComfyUI inside the toolbox:
 start_comfy_ui
 ```
 
-Alias details:
-
-```bash
-cd /opt/ComfyUI
-python main.py --port 8000 --base-directory $HOME/comfy-ui --disable-mmap
-```
 
 > You will see an error message for missing `torchaudio`: this is **temporarily** removed as its presence causes ComfyUI to crash on boot.
 

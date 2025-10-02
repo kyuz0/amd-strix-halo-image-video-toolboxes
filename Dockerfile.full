@@ -17,7 +17,7 @@ RUN python -m pip install --upgrade pip setuptools wheel
 
 # Utils
 COPY comfyui-scripts/get_wan22.sh /opt
-COPY comfyui-scripts/comfy_setup.sh /opt
+COPY comfyui-scripts/start_comfy_ui.sh /opt
 COPY comfyui-scripts/get_qwen_image.sh /opt
 
 # ROCm + torch stack (installed into the venv)

@@ -3,7 +3,7 @@ FROM registry.fedoraproject.org/fedora:rawhide
 # Base packages (keep compilers/headers for Triton JIT at runtime)
 RUN dnf -y install --setopt=install_weak_deps=False --nodocs \
       libdrm-devel python3.13 python3.13-devel git rsync libatomic bash ca-certificates curl \
-      gcc gcc-c++ binutils make git ffmpeg-free \
+      gcc gcc-c++ binutils make git ffmpeg-free amdsmi \
   && dnf clean all && rm -rf /var/cache/dnf/*
 
 # Python venv
@@ -22,12 +22,14 @@ RUN python -m pip install --index-url ${ROCM_INDEX} 'rocm[libraries,devel]' && \
 
 WORKDIR /opt
 
-# ComfyUI
-RUN git clone --depth=1 https://github.com/comfyanonymous/ComfyUI.git /opt/ComfyUI 
+# ComfyUI - Installing full clone to enable self-updating with Comfy-Manager
+RUN git clone https://github.com/comfyanonymous/ComfyUI.git /opt/ComfyUI 
 WORKDIR /opt/ComfyUI
 RUN python -m pip install -r requirements.txt && \
     python -m pip install --prefer-binary \
       pillow opencv-python-headless imageio imageio-ffmpeg scipy "huggingface_hub[hf_transfer]" pyyaml
+# Use COPY link mode because we run with --base-directory in user's home, not in toolbox
+ENV UV_LINK_MODE="copy"
 
 # Qwen Image Studio
 WORKDIR /opt
@@ -61,7 +63,7 @@ COPY scripts/01-rocm-env-for-triton.sh /etc/profile.d/01-rocm-env-for-triton.sh
 
 # Helper scripts (ComfyUI-only)
 COPY --chmod='0645' scripts/get_wan22.sh /opt/
-COPY --chmod='0645' scripts/comfy_setup.sh /opt/
+COPY --chmod='0645' scripts/start_comfy_ui.sh /opt/
 COPY --chmod='0645' scripts/get_qwen_image.sh /opt/
 
 # Banner script (runs on login). Use a high sort key so it runs after venv.sh and 01-rocm-env...
