@@ -63,7 +63,7 @@ COPY scripts/01-rocm-env-for-triton.sh /etc/profile.d/01-rocm-env-for-triton.sh
 
 # Helper scripts (ComfyUI-only)
 COPY --chmod='0645' scripts/get_wan22.sh /opt/
-COPY --chmod='0645' scripts/start_comfy_ui.sh /opt/
+COPY --chmod='0645' scripts/setup_comfy_ui.sh /opt/
 COPY --chmod='0645' scripts/get_qwen_image.sh /opt/
 
 # Banner script (runs on login). Use a high sort key so it runs after venv.sh and 01-rocm-env...

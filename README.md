@@ -85,7 +85,7 @@ This toolbox provides a ROCm nightly stack for Strix Halo (gfx1151), built from 
 | **WAN 2.2** ([Wan-Video/Wan2.2](https://github.com/Wan-Video/Wan2.2))                              | `/opt/wan-video-studio`  | CLI for text-to-video / image-to-video                 |
 | **ComfyUI** ([ComfyUI](https://github.com/comfyanonymous/ComfyUI))                                 | `/opt/ComfyUI`           | Node-based UI, AMD GPU monitor plugin                  |
 
-> **Note:** Scripts in `/opt` (`start_comfy_ui.sh`, `get_qwen_image.sh`, `get_wan22.sh`) are **for ComfyUI only**. Skip them unless you use ComfyUI.
+> **Note:** Scripts in `/opt` (`setup_comfy_ui.sh`, `get_qwen_image.sh`, `get_wan22.sh`) are **for ComfyUI only**. Skip them unless you use ComfyUI.
 
 ---
 
@@ -396,6 +396,8 @@ ComfyUI is a flexible node-based interface for building and running image and vi
 
 ### 9.1. Setup (ComfyUI only)
 
+When launching ComfyUI for the first time or after refreshing the toolbox, run the following script to set up necessary extensions, install requirements, and configure the `~/comfy-ui` directory.
+
 ```bash
 # Fetch model weights to ~/comfy-models
 /opt/get_qwen_image.sh   # fetches Qwen Image models
@@ -407,7 +409,7 @@ It will also set up essential ComfyUI extensions.
 
 ### 9.2. Run
 
-The `start_comfy_ui` helper script starts ComfyUI with the `--base-path` set to your `~/comfy-ui` directory, where all extensions, models, outputs and other user data will be stored, surviving toolbox refreshes. It will populate that directory if it doesn't already exist, and install essential extensions if they are missing.
+The `start_comfy_ui` helper script starts ComfyUI with the `--base-path` set to your `~/comfy-ui` directory, where all extensions, models, outputs and other user data will be stored, surviving toolbox refreshes. 
 
 Start ComfyUI inside the toolbox:
 

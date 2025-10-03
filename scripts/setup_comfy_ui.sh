@@ -20,6 +20,3 @@ done
 sudo chown -R $USER /opt/ComfyUI
 
 cd /opt/ComfyUI
-
-# Start ComfyUI, set the --base-directory to user's home directory so all outputs, models, custom nodes and user data survive toolbox refreshes
-python main.py --port 8000 --base-directory $HOME/comfy-ui --disable-mmap
