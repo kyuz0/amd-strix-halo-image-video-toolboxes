@@ -399,6 +399,10 @@ ComfyUI is a flexible node-based interface for building and running image and vi
 When launching ComfyUI for the first time or after refreshing the toolbox, run the following script to set up necessary extensions, install requirements, and configure the `~/comfy-ui` directory.
 
 ```bash
+/opt/setup_comfy_ui.sh
+```
+
+```bash
 # Fetch model weights to ~/comfy-models
 /opt/get_qwen_image.sh   # fetches Qwen Image models
 /opt/get_wan22.sh        # fetches Wan2.2 models
@@ -417,6 +421,12 @@ Start ComfyUI inside the toolbox:
 start_comfy_ui
 ```
 
+Alias details:
+
+```bash
+cd /opt/ComfyUI
+python main.py --port 8000 --output-directory "$HOME/comfy-outputs" --disable-mmap
+```
 
 > You will see an error message for missing `torchaudio`: this is **temporarily** removed as its presence causes ComfyUI to crash on boot.
 
