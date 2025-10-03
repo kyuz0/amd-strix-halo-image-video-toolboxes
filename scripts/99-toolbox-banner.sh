@@ -91,4 +91,4 @@ printf 'SSH tip: ssh -L 8000:localhost:8000 user@host\n\n'
 # Aliases
 alias start_qwen_studio='cd /opt/qwen-image-studio && uvicorn qwen-image-studio.server:app --reload --host 0.0.0.0 --port 8000'
 # Start ComfyUI, set the --base-directory to user's home directory so all outputs, models, custom nodes and user data survive toolbox refreshes
-alias start_comfy_ui="python main.py --port 8000 --base-directory $HOME/comfy-ui --disable-mmap"
+alias start_comfy_ui="cd /opt/ComfyUI && python main.py --port 8000 --base-directory $HOME/comfy-ui --disable-mmap"
