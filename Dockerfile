@@ -3,7 +3,7 @@ FROM registry.fedoraproject.org/fedora:rawhide
 # Base packages (keep compilers/headers for Triton JIT at runtime)
 RUN dnf -y install --setopt=install_weak_deps=False --nodocs \
       libdrm-devel python3.13 python3.13-devel git rsync libatomic bash ca-certificates curl \
-      gcc gcc-c++ binutils make git ffmpeg-free amdsmi \
+      gcc gcc-c++ binutils make git ffmpeg-free \
   && dnf clean all && rm -rf /var/cache/dnf/*
 
 # Python venv
@@ -15,7 +15,7 @@ RUN printf 'source /opt/venv/bin/activate\n' > /etc/profile.d/venv.sh
 RUN python -m pip install --upgrade pip setuptools wheel
 
 # ROCm + PyTorch (TheRock, include torchaudio for resolver; remove later)
-ARG ROCM_INDEX=https://d2awnip2yjpvqn.cloudfront.net/v2/gfx1151/
+ARG ROCM_INDEX=https://rocm.nightlies.amd.com/v2/gfx1151/
 RUN python -m pip install --index-url ${ROCM_INDEX} 'rocm[libraries,devel]' && \
     python -m pip install --index-url ${ROCM_INDEX} \
       torch torchvision torchaudio==2.7.1a0 pytorch-triton-rocm numpy
