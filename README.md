@@ -425,7 +425,7 @@ Alias details:
 
 ```bash
 cd /opt/ComfyUI
-python main.py --port 8000 --output-directory "$HOME/comfy-outputs" --disable-mmap
+python main.py --port 8000 --base-directory $HOME/comfy-ui --disable-mmap
 ```
 
 > You will see an error message for missing `torchaudio`: this is **temporarily** removed as its presence causes ComfyUI to crash on boot.
