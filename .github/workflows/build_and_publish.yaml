@@ -91,8 +91,8 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           provenance: false
           sbom: false
-          cache-to: type=gha,mode=max
-          cache-from: type=gha
+          no-cache: true
+
 
       # Free buildx cache on the VM after we’ve pushed
       - name: Prune buildx cache
