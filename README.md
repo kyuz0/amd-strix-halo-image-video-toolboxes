@@ -21,7 +21,7 @@ A Fedora **toolbox** image with a full **ROCm environment** for **image & video 
 
 - [1. Overview](#1-overview)  
 - [2. Watch the YouTube Video](#2-watch-the-youtube-video)  
-- [3. 🚨 Updates — 2025-09-06](#3--updates--2025-09-06)  
+- [3. 🚨 Updates — 2025-11-15](#3--updates--2025-11-15)   
 - [4. Components (What’s Included)](#4-components-whats-included)  
 - [5. Creating the Toolbox](#5-creating-the-toolbox)  
   - [5.1. Enter & Update](#51-enter--update)  
@@ -31,7 +31,6 @@ A Fedora **toolbox** image with a full **ROCm environment** for **image & video 
   - [7.1. Download Models](#71-download-models)  
   - [7.2. How to Start](#72-how-to-start)  
   - [7.3. Paths & Persistence](#73-paths--persistence)  
-  - [7.4. Attention Backend & Speed (Qwen)](#74-attention-backend--speed-qwen)  
 - [8. WAN 2.2](#8-wan-22)  
   - [8.1. Download Models](#81-download-models)  
   - [8.2. Video Generation Examples](#82-video-generation-examples)  
@@ -40,7 +39,6 @@ A Fedora **toolbox** image with a full **ROCm environment** for **image & video 
     - [8.2.3. Speech-to-Video (S2V, 14B)](#823-speech-to-video-s2v-14b)  
     - [8.2.4. TI2V 5B Checkpoint (not recommended)](#824-ti2v-5b-checkpoint-not-recommended)  
   - [8.3. Notes](#83-notes)  
-  - [8.4. Attention Backend & Speed (WAN)](#84-attention-backend--speed-wan)  
 - [9. ComfyUI](#9-comfyui)  
   - [9.1. Setup (ComfyUI only)](#91-setup-comfyui-only)  
   - [9.2. Run](#92-run)  
@@ -62,18 +60,12 @@ This toolbox provides a ROCm nightly stack for Strix Halo (gfx1151), built from 
 
 ---
 
-## 3. 🚨 Updates — 2025-09-06
+## 3. 🚨 Updates — 2025-11-15
 
-### 3.1. 🔥 Performance Improvements
+### ⚡ Torch + AOTriton Wheels
 
-* **Qwen Image Studio** and **WAN 2.2** now use **tiled VAE decoding/encoding** phases.
-  This significantly reduces memory pressure and improves speed and stability on Strix Halo.
-
-### 3.2. 🆕 New Model: Speech-to-Video (S2V)
-
-* Added support for **speech-to-video** in WAN 2.2 (14B checkpoint).
-* No Lightning LoRA adapters yet — so inference requires \~40 steps,
-* Still, it enables audio + image + prompt–based video generation.
+* Shipping the latest **PyTorch ROCm wheels from [TheRock](https://github.com/ROCm/TheRock)**, built with **AOTriton** enabled for Strix Halo (gfx1151).
+* **AOTriton** = *Ahead-Of-Time compiled Triton attention kernels*. They’re prebuilt inside the wheel, so there’s **no runtime JIT**, no extra `triton` package, and no first-run compilation delay.
 
 ---
 
@@ -231,19 +223,6 @@ You can also check the console log to see the exact CLI commands executed for ea
 
 All generated images and job metadata are stored under `~/.qwen-image-studio/` in your HOME (outside the toolbox), so they persist outside the toolbox.
 
-### 7.4. Attention Backend & Speed (Qwen)
-
-* **Default:** **PyTorch SDPA** (Scaled Dot-Product Attention) — **stable path**.
-* **Optional speed-up:** enable **Triton FlashAttention** (\~2× faster) **before** running Qwen:
-
-```bash
-export QWEN_FA_SHIM=1
-```
-
-> ⚠️ **Stability note (gfx1151):** Triton kernels can still be **buggy** and **crash** more often. With SDPA (default) users should **not** see crashes related to attention.
-
----
-
 ## 8. WAN 2.2
 
 **Path:** `/opt/wan-video-studio` (CLI only, Web UI planned)
@@ -361,33 +340,6 @@ python generate.py --task ti2v-5B --size 1280*704 \
 * Keep all model files under HOME (`~/Wan2.2-*`) so they survive toolbox updates.
 * Official Lightning repo: [https://huggingface.co/lightx2v/Wan2.2-Lightning](https://huggingface.co/lightx2v/Wan2.2-Lightning)
 
-### 8.4. Attention Backend & Speed (WAN)
-
-* **Default:** **Triton FlashAttention** is **ON by default** (video denoising is very expensive; speed matters).
-* **Switch to SDPA (more stable):**
-
-```bash
-export WAN_ATTENTION_BACKEND=sdpa
-```
-
-**Speed example (21-frame video, 4 steps):**
-
-Triton:
-
-```
-100%|██████████| 4/4 [01:37<00:00, 24.28s/it]
-```
-
-SDPA:
-
-```
-100%|██████████| 4/4 [04:30<00:00, 67.67s/it]
-```
-
-The difference is considerable, especially as the number of frames increases.
-
----
-
 ## 9. ComfyUI
 
 **Path:** `/opt/ComfyUI`
@@ -449,7 +401,7 @@ You can load ready-made workflow files directly into ComfyUI:
 
 ## 10. Stability and Performance Notes
 
-Instability has been **significantly reduced**. When using **PyTorch SDPA** (the **default for Qwen Image Studio**), users generally **do not** encounter attention-related crashes. Issues are **more likely** when enabling **Triton FlashAttention** on gfx1151 (see Qwen §7.4 and WAN §8.4 if you opt into Triton).
+Instability has been **significantly reduced** thanks to the AOTriton-enabled PyTorch wheels. With `TORCH_ROCM_AOTRITON_ENABLE_EXPERIMENTAL=1` exported, Qwen Image Studio, WAN 2.2, and ComfyUI all default to the same precompiled fast attention kernels, so there’s no need to juggle SDPA vs. Triton env vars or install extra Triton JIT packages.
 
 If a crash occurs, you may still see messages like:
 
@@ -464,13 +416,9 @@ or:
 !!! Exception during processing !!! HIP error: an illegal memory access was encountered
 ```
 
-These are tracked here: [https://gitlab.freedesktop.org/drm/amd/-/issues/4321#note\_3048205](https://gitlab.freedesktop.org/drm/amd/-/issues/4321#note_3048205)
-A fix is expected in **ROCm 7.0.x**. **Qwen Image Studio** is generally more stable than ComfyUI and includes automatic retries (each job up to 3 attempts). ComfyUI may need a relaunch if it crashes.
+These are tracked here: [https://gitlab.freedesktop.org/drm/amd/-/issues/4632#note_3194291](https://gitlab.freedesktop.org/drm/amd/-/issues/4632#note_3194291)
 
-Also track these tickets for performance issues on Strix Halo:
-
-* [https://github.com/ROCm/ROCm/issues/4748](https://github.com/ROCm/ROCm/issues/4748)
-* [https://github.com/ROCm/ROCm/issues/4499](https://github.com/ROCm/ROCm/issues/4499)
+AMD is actively working on these and there are new patches currently being tested.
 
 ---
 
@@ -479,7 +427,6 @@ Also track these tickets for performance issues on Strix Halo:
 * Qwen Image (original CLI): [https://github.com/ivanfioravanti/qwen-image-mps](https://github.com/ivanfioravanti/qwen-image-mps)
 * ComfyUI: [https://github.com/comfyanonymous/ComfyUI](https://github.com/comfyanonymous/ComfyUI)
 * WAN 2.2: [https://github.com/Wan-Video/Wan2.2](https://github.com/Wan-Video/Wan2.2)
-* ROCm FlashAttention (AMD fork): [https://github.com/ROCm/flash-attention](https://github.com/ROCm/flash-attention)
 * Toolbox (Fedora): [https://containertoolbx.org/](https://containertoolbx.org/)
 
 ---
