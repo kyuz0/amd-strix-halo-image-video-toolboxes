@@ -46,15 +46,6 @@ WORKDIR /opt
 RUN git clone --depth=1 https://github.com/kyuz0/qwen-image-studio /opt/qwen-image-studio && \
     python -m pip install -r /opt/qwen-image-studio/requirements.txt
 
-# Flash-Attention
-ENV FLASH_ATTENTION_TRITON_AMD_ENABLE="TRUE"
-
-RUN git clone https://github.com/ROCm/flash-attention.git &&\ 
-    cd flash-attention &&\
-    git checkout main_perf &&\
-    python setup.py install && \
-    cd /opt && rm -rf /opt/flash-attention
-
 # Wan Video Studio
 RUN git clone --depth=1 https://github.com/kyuz0/wan-video-studio /opt/wan-video-studio && \
     python -m pip install --prefer-binary \
@@ -68,7 +59,7 @@ RUN chmod -R a+rwX /opt && chmod +x /opt/*.sh || true && \
     python -m pip cache purge || true && rm -rf /root/.cache/pip || true && \
     dnf clean all && rm -rf /var/cache/dnf/*
 
-# ROCm/Triton env (exports TRITON_HIP_* and LD_LIBRARY_PATH; also FA enable)
+# Enable torch TORCH_ROCM_AOTRITON_ENABLE_EXPERIMENTAL
 COPY scripts/01-rocm-env-for-triton.sh /etc/profile.d/01-rocm-env-for-triton.sh
 
 # Banner script (runs on login). Use a high sort key so it runs after venv.sh and 01-rocm-env...
