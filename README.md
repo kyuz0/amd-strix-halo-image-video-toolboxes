@@ -356,7 +356,7 @@ Before running ComfyUI, download model weights to `~/comfy-models` in your home 
 
 # Fetch model weights to ~/comfy-models
 /opt/get_qwen_image.sh   # fetches Qwen Image models
-/opt/get_wan22.sh        # fetches Wan2.2 models
+/opt/get_wan22.sh common # fetches Wan2.2 models
 ```
 
 These scripts ensure model files are downloaded to `~/comfy-models/` where they survive toolbox refreshes.
