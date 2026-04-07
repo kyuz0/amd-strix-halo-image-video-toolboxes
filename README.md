@@ -8,6 +8,18 @@
 
                          I M A G E   &   V I D E O                        
 ```
+# 🚨 DISCONTINUED 🚨
+
+> [!WARNING]
+> **This toolbox has been discontinued and is now outdated.**
+> 
+> For the new, updated toolbox for image and video generation, please see:
+> 👉 [https://github.com/kyuz0/amd-strix-halo-comfyui-toolboxes](https://github.com/kyuz0/amd-strix-halo-comfyui-toolboxes)
+>
+> **Official Landing Page:** 
+> The official landing page for all toolboxes is **[https://strix-halo-toolboxes.com/](https://strix-halo-toolboxes.com/)**. Please refer to this site for a complete list of current, maintained toolboxes.
+
+---
 
 # AMD Strix Halo — Image & Video Toolbox
 
