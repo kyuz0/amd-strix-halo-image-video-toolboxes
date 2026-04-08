@@ -14,9 +14,9 @@ mkdir -p "$MODEL_HOME"/{text_encoders,vae,diffusion_models}
 mkdir -p "$STAGE"
 
 download_if_missing () {
-  local repo="$1"; shift
-  local remote="$2"; shift
-  local subdir="$3"; shift
+  local repo="$1";
+  local remote="$2";
+  local subdir="$3";
   local dest_dir="$MODEL_HOME/$subdir"
   local dest_file="$dest_dir/$(basename "$remote")"
   local staged="$STAGE/$remote"
